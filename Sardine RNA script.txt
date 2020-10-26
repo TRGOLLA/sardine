@@ -1,0 +1,17 @@
+awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%25000==0){file=sprintf("myseq%d.fa",n_seq);} print >> file; n_seq++; next;} { print >> file; }' < trinity_proteins20.fa
+
+
+fastqc -o fastqc C001009190_R1.fastq.gz C001009190_R2.fastq.gz
+
+fastqc -o fastqc C001020202_R1.fastq.gz C001020202_R2.fastq.gz
+firefox fastqc/C001009190_R1_fastqc.html
+
+seqtk sample -s100 C001009190_R1.fastq.gz 10000 > C001009190_R1sub1.fq.gz
+seqtk sample -s100 C001009190_R2.fastq.gz 10000 > C001009190_R2sub2.fq.gz
+
+seqtk trimfq -b 5 -e 10 C001009190_R1sub1.fq.gz > C001009190_R1sub1_trimmed.fq.gz
+seqtk trimfq -b 5 -e 10 C001009190_R2sub1.fq.gz > C001009190_R2sub1_trimmed.fq.gz
+
+
+java -jar /home/tg484/Genomics_Workshop/Programs/Trimmomatic-0.39/trimmomatic-0.39.jar PE -phred33 -trimlog trim.log C001009190_R1.fastq.gz C001009190_R2.fastq.gz C001009190_R1.paired.fastq.gz C001009190_R1.unpaired.fastq C001009190_R2.paired.fastq C001009190_R2.unpaired.fastq ILLUMINACLIP:/home/$USER/Genomics_Workshop/Programs/Trimmomatic-0.39/adapters/TruSeq3-PE.fa:2:30:10 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:15 MINLEN:35
+
